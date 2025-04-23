@@ -1,32 +1,13 @@
 const express = require("express");
-const admin = require("firebase-admin");
 const cors = require("cors");
+const { db } = require("./firebase");
+const { sendOffer, sendAnswer } = require("./sendPush");
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
 // Initialize Firebase Admin SDK
-admin.initializeApp({
-  credential: admin.credential.cert({
-    type: "service_account",
-    project_id: "portfolio-8bb32",
-    private_key_id: "7e69b3c3acec6a44d3eb563e5509094a76575a97",
-    private_key:
-      "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDI+LXNbWO5IoUw\nZ2pJBRviMHugt5lr15cbMUjxDITn97m/rVYzdLts+frj5WMtlWNhOc17ga4BeF3u\nJCSgbbdbcT1qYr3E5utl24/kO3eVrk9T2TISA3ymdBAk7cR05UwEsuZKFmmeHPlN\nxDjsPpjkRPYTT/h9KeJMBiOhsZWlssOTzrQaRi5dUi+hfpdvpAT3DTlTfvg1bzE9\nmyhBbSWmMkdQeXt2IjOQe9M43SV2Nc2VnXY6ZYYmejOjlTGL0n98kISlTWa93jcm\n23wFKZEKwDt9u40m0pJ4kRcAgABRl3RgIx0+QVtV4bizSEWIuxj0n+lZea7C9+X3\nwIz3E2OxAgMBAAECggEABFmRwc0E1AyBun76h3MTW+11t5BRw0pKzH1gGUuOkuDD\nRflP/NQhfGXavtUHtQRfPsr7/hjb9c8vpUhl/IzzY4jLbgKOHfVrkexTLHr3Byfb\nMrLoSQiHSakIcmwtDOSrpQxkPKVIivIQmVTOcJqYP5SYiOl5tOfTrJaTbdwEo631\nh1W4g8GTdhdrlJ+3uRA7C1Z78+lHHKXIcd2AI192LxAz0h89xJyl6eWacnVe9isT\nEQB4zR9bN5gejMW3eUk2Io8IdDIV2YbwP7m719nK7pHH4vRxcHrWqNIZ2hj2kbSF\nXTy2zFy+KQ98bmoV24VisqI9aZmwVmvHMhQpFleQQwKBgQDrbaqSHjwUxc/1GiqJ\n3koP2yo36sbKPcOtcvC4dXgnVt6kI4YKC++vDon548GpFrc1mUAOz00HomDVBLbS\nMwVhiqJZv9zmwxc3M7FwXFR6biSWrthOJihbm4tBlNf+eECvl98x4SE6g3GwsgtX\nTJ+oGlZCpkIvpyjOb9Wciep3owKBgQDaiEXogh0w17Agto7qJPx0DxFst/7UjpBW\nSS/OHch/KaDmhgC6QwzLVbnXJ9d2UfPbvUhqG7/pRjoCVBrgYlU1FkPjv7ayClYQ\nhhJkKnorZBTt2176nhOs3RDmzN++O1Gz86efu2o1QDqFz+A1gI11uNJCqDCPPbeE\n7ElL1c58mwKBgGuzXq27sSabm9f34W/yxhTc4UJ1X/2TJdpKU78+1fnBLtcN/TrJ\nXRvLXel4fNa6spONiRV9VjLg4MVyg6RDfPmzbzP5prfWld9GAa1yP59GlextDj0q\nDZpi3ODik7ExF/58TrnF0OqwySjZOoD0Z7GCYuXYozyjjvJpjOIw4ZdbAoGAVTgx\nMuOSqJpj983ZW5vCyyuZGvGBsbhKtythNhrNNjGwqlT1ca12DtFGYI4L6vs4gqeE\n1sQtibW2J3RO6tPN8J7XKLh5cWKwf08ZWvBppgQoWT1kA42jlJS845RfaFrPmMJa\nyuKWH2AFsmsHPzX7dD332MCn9yQVLgPK7YTaOiMCgYEAhfRr/1Lppym6coeGEhM3\nouh8fmAoyDJWQldKJcShiIxtSl9G3brvod5ELSKR8Q7BbIr2MsMyHOars6lggKSK\nZ7IVzNMkSlBGLrMKpkzqJx3HhB7SU7EGU9LJFLwSA3p6e4kT3ZbgOJgTcf5EXP5k\nX7mGaXG5k7zYrbCu+zK+o9w=\n-----END PRIVATE KEY-----\n",
-    client_email:
-      "firebase-adminsdk-fbsvc@portfolio-8bb32.iam.gserviceaccount.com",
-    client_id: "111538327326289779961",
-    auth_uri: "https://accounts.google.com/o/oauth2/auth",
-    token_uri: "https://oauth2.googleapis.com/token",
-    auth_provider_x509_cert_url: "https://www.googleapis.com/oauth2/v1/certs",
-    client_x509_cert_url:
-      "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-fbsvc%40portfolio-8bb32.iam.gserviceaccount.com",
-    universe_domain: "googleapis.com",
-  }),
-});
-
-const db = admin.firestore();
 
 // === /offer ===
 // Android device sends offer here
@@ -40,6 +21,7 @@ app.post("/offer", async (req, res) => {
       timestamp: Date.now(),
     });
     console.log("Offer stored");
+    sendOffer(offer);
     res.sendStatus(200);
   } catch (err) {
     console.error("Error saving offer:", err);
@@ -49,7 +31,41 @@ app.post("/offer", async (req, res) => {
 
 // === /accept ===
 // PC sends answer here
-app.post("/accept", async (req, res) => {
+let androidToken = "ANDROID_FCM_TOKEN";
+
+// Endpoint to accept the answer from the PC
+app.post("/accept", (req, res) => {
+  const { answer } = req.body;
+  if (!answer) {
+    return res.status(400).send("Answer is required");
+  }
+
+  console.log("Answer received from PC:", answer);
+
+  // Send the answer to the Android device via push notification
+  const message = {
+    token: androidToken, // Token of the Android device
+    data: {
+      answer: JSON.stringify(answer),
+    },
+    notification: {
+      title: "PC Answer",
+      body: "Your PC has responded with an answer!",
+    },
+  };
+
+  fcm
+    .send(message)
+    .then((response) => {
+      console.log("Successfully sent answer to Android:", response);
+      res.send("Answer sent to Android!");
+    })
+    .catch((error) => {
+      console.error("Error sending answer to Android:", error);
+      res.status(500).send("Error sending answer to Android");
+    });
+});
+/* app.post("/accept", async (req, res) => {
   const { answer } = req.body;
   if (!answer) return res.status(400).send("Missing answer");
 
@@ -58,13 +74,14 @@ app.post("/accept", async (req, res) => {
       answer,
       timestamp: Date.now(),
     });
+    sendAnswer(answer);
     console.log("Answer stored");
     res.sendStatus(200);
   } catch (err) {
     console.error("Error saving answer:", err);
     res.status(500).send("Failed to save answer");
   }
-});
+}); */
 
 // Start server
 const PORT = process.env.PORT || 3000;
