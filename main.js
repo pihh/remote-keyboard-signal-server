@@ -1,6 +1,6 @@
 const express = require("express");
 const cors = require("cors");
-const { db } = require("./firebase");
+const { db, fcm } = require("./firebase");
 const { sendOffer, sendAnswer } = require("./sendPush");
 
 const app = express();
