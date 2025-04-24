@@ -65,24 +65,6 @@ app.post("/accept", (req, res) => {
       res.status(500).send("Error sending answer to Android");
     });
 });
-/* app.post("/accept", async (req, res) => {
-  const { answer } = req.body;
-  if (!answer) return res.status(400).send("Missing answer");
-
-  try {
-    await db.collection("signals").doc("latest-answer").set({
-      answer,
-      timestamp: Date.now(),
-    });
-    sendAnswer(answer);
-    console.log("Answer stored");
-    res.sendStatus(200);
-  } catch (err) {
-    console.error("Error saving answer:", err);
-    res.status(500).send("Failed to save answer");
-  }
-}); */
-
 // Start server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

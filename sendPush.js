@@ -6,7 +6,7 @@ const { fcm } = require("./firebase");
   "BDRF2OTkigcpk6LBunDhV7yCeaZv50G_Cey3t5UUJvkVv0nFw_WTjJsRptcD3MRn3VEjJjaxiE_96n1YFHp5mXg"; */
 const pcToken =
   "eGS1UQKAap-4mtpapr1f36:APA91bH-LKwzpMiY0xn86HxsoFqK59VR7h45h1ZTiW6DXAtpV2lI737WN2WKRexrM42iXzZPvobCdrimCJ5WX-3OoaUbVBfE8XYWJwOONDEQGWHSxogWnm0";
-const message = {
+/* const message = {
   token: pcToken,
   data: {
     message: "Hello from Android!",
@@ -16,7 +16,7 @@ const message = {
     title: "Incoming WebRTC Offer",
     body: "Your Android device wants to connect!",
   },
-};
+}; */
 
 fcm
   .send(message)
