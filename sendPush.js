@@ -2,7 +2,7 @@ const admin = require("firebase-admin");
 const { fcm } = require("./firebase");
 
 const pcToken =
-  "cLd_83cR7nWygwVMfgxFdM:APA91bHIN4Wt1cKphuWvQ3wsotJ8TBfm22XIaN-A7ap5HWRqhvT2MLvE4xqL73b_1ug1Rb0sXMCp-op7Eu1dh-eP5oUr52kP4z94IMQjKzADVyPH7CULKR0";
+  "cLd_83cR7nWygwVMfgxFdM:APA91bFW7Gv63-_EIMd3IC2y12961fKYlj-UCV4gOYWHhhYOfSWXRKtyeFB9J_PC5oMxPcQGDnMgeB_ZNZcjis9kBIYag4uZrm-l5TISbSXu7xhWk4cIoyU";
 const send = (token, payload, message) => {
   const messageObj = {
     token: token,
