@@ -16,7 +16,7 @@ app.use(express.json());
 // Android device sends offer here
 app.post("/offer", async (req, res) => {
   const { offer } = req.body;
-  if (!offer) return res.status(400).send("Missing offer");
+  if (!offer) return res.status(400).send({msg:"Missing offer"});
 
   try {
     await db.collection("signals").doc("latest-offer").set({
@@ -24,25 +24,54 @@ app.post("/offer", async (req, res) => {
       timestamp: Date.now(),
     });
     console.log("Offer stored");
-    sendOffer(offer);
-    res.sendStatus(200);
+    sendOffer(pcToken,offer);
+    res.send({msg:"Offer created"})
   } catch (err) {
     console.error("Error saving offer:", err);
-    res.status(500).send("Failed to save offer");
+    res.status(500).send({msg:"Failed to save offer"});
   }
 });
 
-// === /accept ===
-// PC sends answer here
+/**
+ * Pc token logic
+ * 
+ */
+
+let pcToken =
+  "cLd_83cR7nWygwVMfgxFdM:APA91bFW7Gv63-_EIMd3IC2y12961fKYlj-UCV4gOYWHhhYOfSWXRKtyeFB9J_PC5oMxPcQGDnMgeB_ZNZcjis9kBIYag4uZrm-l5TISbSXu7xhWk4cIoyU";
+  app.post("/pc-token", (req, res) => {
+  const { token } = req.body;
+  if (!token) {
+    return res.status(400).send({msg:"Token is required"});
+  }
+  pcToken = token;
+   res.send({msg:"PC token updated!"});
+});
+
+/**
+ * Android token logic 
+ */
 let androidToken =
   "c7iUOeHCTBdWl5x5KaQlYY:APA91bEl23JTxqZealuSZ-MQthZmyzCqcer48GQLTSdFtGvcT3izxeLfAimkKkWbOei3OQ89pI7tFV-A2F_3sOyYnwyHZ5tPNO3CKAwMV7uN3r3mKnHHp88";
-/* let androidToken =
- "c4EkdAMXT1ynsgSO49zJL_:APA91bHp1ne-j2lhRBj9gQmcNqBeCW8X5BOMjQ6hHvlLABTqOSyue4meDht0JnMs4NB69dN1jrOzIO6K7br5oy69Q6zuejYHBltbC9tnD3um2dgdg5q9K-Y";
-*/ // Endpoint to accept the answer from the PC
+
+  app.post("/android-token", (req, res) => {
+  const { token } = req.body;
+  if (!token) {
+    return res.status(400).send({msg:"Token is required"});
+  }
+  androidToken = token;
+   res.send({msg:"Android token updated!"});
+});
+
+
+// === /accept ===
+// PC sends answer here
+
+ // Endpoint to accept the answer from the PC
 app.post("/accept", (req, res) => {
   const { answer } = req.body;
   if (!answer) {
-    return res.status(400).send("Answer is required");
+    return res.status(400).send({msg:"Answer is required"});
   }
 
   console.log("Answer received from PC:", answer);
@@ -63,19 +92,23 @@ app.post("/accept", (req, res) => {
     .send(message)
     .then((response) => {
       console.log("Successfully sent answer to Android:", response);
-      res.send("Answer sent to Android!");
+      res.send({msg:"Answer sent to Android!"});
     })
     .catch((error) => {
       console.error("Error sending answer to Android:", error);
-      res.status(500).send("Error sending answer to Android");
+      res.status(500).send({msg:"Error sending answer to Android"});
     });
 });
 
-// Catch-all for undefined routes (404)
-/* app.use((req, res) => {
-  res.status(404).send("Page Not Found");
-});
+/**
+ * Undefined route logic
+ * Catch-all for undefined routes (404)
  */
+
+app.use((req, res) => {
+  res.status(404).send({msg:"Page Not Found"});
+});
+
 // Start the server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
