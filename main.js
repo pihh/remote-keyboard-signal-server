@@ -35,8 +35,10 @@ app.post("/offer", async (req, res) => {
 // === /accept ===
 // PC sends answer here
 let androidToken =
-  "c4EkdAMXT1ynsgSO49zJL_:APA91bHp1ne-j2lhRBj9gQmcNqBeCW8X5BOMjQ6hHvlLABTqOSyue4meDht0JnMs4NB69dN1jrOzIO6K7br5oy69Q6zuejYHBltbC9tnD3um2dgdg5q9K-Y";
-// Endpoint to accept the answer from the PC
+  "c7iUOeHCTBdWl5x5KaQlYY:APA91bEl23JTxqZealuSZ-MQthZmyzCqcer48GQLTSdFtGvcT3izxeLfAimkKkWbOei3OQ89pI7tFV-A2F_3sOyYnwyHZ5tPNO3CKAwMV7uN3r3mKnHHp88";
+/* let androidToken =
+ "c4EkdAMXT1ynsgSO49zJL_:APA91bHp1ne-j2lhRBj9gQmcNqBeCW8X5BOMjQ6hHvlLABTqOSyue4meDht0JnMs4NB69dN1jrOzIO6K7br5oy69Q6zuejYHBltbC9tnD3um2dgdg5q9K-Y";
+*/ // Endpoint to accept the answer from the PC
 app.post("/accept", (req, res) => {
   const { answer } = req.body;
   if (!answer) {
