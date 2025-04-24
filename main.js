@@ -12,25 +12,6 @@ app.use(cors());
 // Middleware to parse JSON request bodies
 app.use(express.json());
 
-// === /offer ===
-// Android device sends offer here
-app.post("/offer", async (req, res) => {
-  const { offer } = req.body;
-  if (!offer) return res.status(400).send({msg:"Missing offer"});
-
-  try {
-    await db.collection("signals").doc("latest-offer").set({
-      offer,
-      timestamp: Date.now(),
-    });
-    console.log("Offer stored");
-    sendOffer(pcToken,offer);
-    res.send({msg:"Offer created"})
-  } catch (err) {
-    console.error("Error saving offer:", err);
-    res.status(500).send({msg:"Failed to save offer"});
-  }
-});
 
 /**
  * Pc token logic
@@ -45,20 +26,22 @@ let pcToken =
     return res.status(400).send({msg:"Token is required"});
   }
   pcToken = token;
-   res.send({msg:"PC token updated!"});
+  console.log('pc token updated',token)
+  res.send({msg:"PC token updated!"});
 });
 
 /**
  * Android token logic 
- */
+*/
 let androidToken =
-  "c7iUOeHCTBdWl5x5KaQlYY:APA91bEl23JTxqZealuSZ-MQthZmyzCqcer48GQLTSdFtGvcT3izxeLfAimkKkWbOei3OQ89pI7tFV-A2F_3sOyYnwyHZ5tPNO3CKAwMV7uN3r3mKnHHp88";
+"c7iUOeHCTBdWl5x5KaQlYY:APA91bEl23JTxqZealuSZ-MQthZmyzCqcer48GQLTSdFtGvcT3izxeLfAimkKkWbOei3OQ89pI7tFV-A2F_3sOyYnwyHZ5tPNO3CKAwMV7uN3r3mKnHHp88";
 
-  app.post("/android-token", (req, res) => {
+app.post("/android-token", (req, res) => {
   const { token } = req.body;
   if (!token) {
     return res.status(400).send({msg:"Token is required"});
   }
+  console.log('Android token updated',token)
   androidToken = token;
    res.send({msg:"Android token updated!"});
 });
@@ -70,6 +53,7 @@ let androidToken =
  // Endpoint to accept the answer from the PC
 app.post("/accept", (req, res) => {
   const { answer } = req.body;
+   console.log("Answer received from PC:");
   if (!answer) {
     return res.status(400).send({msg:"Answer is required"});
   }
@@ -99,6 +83,29 @@ app.post("/accept", (req, res) => {
       res.status(500).send({msg:"Error sending answer to Android"});
     });
 });
+
+
+// === /offer ===
+// Android device sends offer here
+app.post("/offer", async (req, res) => {
+  const { offer } = req.body;
+  console.log("Offer recieved from android",offer,pcToken);
+  if (!offer) return res.status(400).send({msg:"Missing offer"});
+
+  try {
+/*     await db.collection("signals").doc("latest-offer").set({
+      offer,
+      timestamp: Date.now(),
+    }); */
+    sendOffer(pcToken,offer);
+    res.send({msg:"Offer created"})
+  } catch (err) {
+    console.error("Error saving offer:", err);
+    res.status(500).send({msg:"Failed to save offer"});
+  }
+});
+
+
 
 /**
  * Undefined route logic
