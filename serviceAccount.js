@@ -1,18 +1,4 @@
-// Load environment variables from .env file
-require("dotenv").config();
-const admin = require("firebase-admin");
-const serviceAccount = require("./serviceAccount");
-
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-});
-
-const db = admin.firestore();
-const fcm = admin.messaging();
-
-module.exports = { db, fcm };
-/* const admin = require("firebase-admin");
-const cert = {
+module.exports = {
   type: "service_account",
   project_id: "portfolio-8bb32",
   private_key_id: "7e69b3c3acec6a44d3eb563e5509094a76575a97",
@@ -28,13 +14,3 @@ const cert = {
     "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-fbsvc%40portfolio-8bb32.iam.gserviceaccount.com",
   universe_domain: "googleapis.com",
 };
-
-admin.initializeApp({
-  credential: admin.credential.cert(cert),
-});
-
-const db = admin.firestore();
-const fcm = admin.messaging();
-
-module.exports = { db, fcm };
- */
