@@ -4,12 +4,13 @@ const { db } = require("./firebase");
 const { sendOffer, sendAnswer } = require("./sendPush");
 
 const app = express();
-app.use(cors());
-app.use(express.json());
 
+// Setup CORS
 app.use(cors());
-app.options("*", cors()); // <- this line
-// Initialize Firebase Admin SDK
+//app.options("*", cors()); // Handles pre-flight requests
+
+// Middleware to parse JSON request bodies
+app.use(express.json());
 
 // === /offer ===
 // Android device sends offer here
@@ -67,7 +68,13 @@ app.post("/accept", (req, res) => {
       res.status(500).send("Error sending answer to Android");
     });
 });
-// Start server
+
+// Catch-all for undefined routes (404)
+/* app.use((req, res) => {
+  res.status(404).send("Page Not Found");
+});
+ */
+// Start the server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Signaling server running on http://localhost:${PORT}`);

@@ -1,4 +1,17 @@
+// Load environment variables from .env file
+require("dotenv").config();
 const admin = require("firebase-admin");
+const serviceAccount = require(process.env.FIREBASE_ADMIN_SDK_PATH);
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+});
+
+const db = admin.firestore();
+const fcm = admin.messaging();
+
+module.exports = { db, fcm };
+/* const admin = require("firebase-admin");
 const cert = {
   type: "service_account",
   project_id: "portfolio-8bb32",
@@ -24,3 +37,4 @@ const db = admin.firestore();
 const fcm = admin.messaging();
 
 module.exports = { db, fcm };
+ */
